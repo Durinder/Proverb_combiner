@@ -11,4 +11,32 @@ proverbsRouter.get('/', async (request, response, next) => {
   }
 })
 
+proverbsRouter.get('/random', async (request, response, next) => {
+  try {
+    const count = await Fin.count()
+    const random = []
+    for (let i = 0; i < 2; i++) {
+      random[i] = Math.floor(Math.random() * count)
+    }
+
+    let newProverb = ''
+    let newLocation = ''
+    for (let i = 0; i < 2; i++) {
+      let ret = await Fin.findOne().skip(random[i])
+      if (i == 0) {
+        newProverb += ret.content[i]
+        newLocation += ret.location
+      }
+      else {
+        newProverb += `, ${ret.content[i]}`
+        newLocation += `/${ret.location}`
+      }
+    }
+    response.send(newProverb + ' ' + newLocation)
+  }
+  catch(error) {
+    next(error)
+  }
+})
+
 module.exports = proverbsRouter
