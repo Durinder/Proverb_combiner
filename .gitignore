@@ -1,4 +1,6 @@
 raw_data.txt
 venv/
 db.json
-backend/node_modules/
+node_modules/
+.env
+.eslintrc.json
