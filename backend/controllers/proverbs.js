@@ -32,7 +32,7 @@ proverbsRouter.get('/random', async (request, response, next) => {
         newLocation += `/${ret.location}`
       }
     }
-    response.send(newProverb + ' ' + newLocation)
+    response.send(`<!DOCTYPE html><title>Random Proverb Combined</title><h1>${newProverb} (${newLocation})</h1>`)
   }
   catch(error) {
     next(error)
