@@ -18,7 +18,7 @@ app.use(express.json())
 
 app.use(middleware.requestLogger)
 
-app.use('/api/proverbs', proverbsRouter)
+app.use(proverbsRouter)
 
 app.use(middleware.errorHandler)
 app.use(middleware.unknownEndpoint)
