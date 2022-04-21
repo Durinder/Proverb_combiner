@@ -1,13 +1,12 @@
 const proverbsRouter = require('express').Router()
 const Fin = require('../models/fin')
 const AllFin = require('../models/allFin')
+const Eng = require('../models/eng')
 const translate = require('@vitalets/google-translate-api')
 
 proverbsRouter.get('/', async (request, response, next) => {
   try {
     response.sendFile('views/mainpage.html', {root: __dirname})
-    // const proverbs = await Fin.find({})
-    // response.json(proverbs.map(proverb => proverb.toJSON()))
   }
   catch(error) {
     next(error)
@@ -20,12 +19,11 @@ proverbsRouter.get('/random', async (request, response, next) => {
     const random = Math.floor(Math.random() * count)
     const proverb = await AllFin.findOne().skip(random)
 
-    const translatedProverb = await translate(proverb.content, {to: 'en'})
-    const translatedLocation = await translate(proverb.location, {to: 'en'})
+    const translated = await translate(proverb.content + '(' + proverb.location + ')', {to: 'en'})
 
     response.send(`<!DOCTYPE html><title>Sananlaskuja</title>
     <h1>${proverb.content} (${proverb.location})</h1>
-    <h1>${translatedProverb.text} (${translatedLocation.text})</h1>`)
+    <h1>${translated.text}</h1>`)
   }
   catch(error) {
     next(error)
@@ -54,11 +52,28 @@ proverbsRouter.get('/combined', async (request, response, next) => {
       }
     }
 
-    const translatedProverb = await translate(newProverb, {to: 'en'})
-    const translatedLocation = await translate(newLocation, {to: 'en'})
+    const translated = await translate(newProverb + '(' + newLocation + ')', {to: 'en'})
 
-    response.send(`<!DOCTYPE html><title>Sananlaskuja</title><h1>${newProverb} (${newLocation})</h1>
-    <h1>${translatedProverb.text} (${translatedLocation.text})</h1>`)
+    response.send(`<!DOCTYPE html><title>Sananlaskuja</title>
+    <h1>${newProverb} (${newLocation})</h1>
+    <h1>${translated.text}</h1>`)
+  }
+  catch(error) {
+    next(error)
+  }
+})
+
+proverbsRouter.get('/eng', async (request, response, next) => {
+  try {
+    const count = await Eng.count()
+    const random = Math.floor(Math.random() * count)
+    const proverb = await Eng.findOne().skip(random)
+
+    const translated = await translate(proverb.content, { to: 'fi' })
+
+    response.send(`<!DOCTYPE html><title>Sananlaskuja</title>
+    <h1>${proverb.content}</h1>
+    <h1>${translated.text}</h1>`)
   }
   catch(error) {
     next(error)
