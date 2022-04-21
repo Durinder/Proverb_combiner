@@ -2,6 +2,7 @@ const proverbsRouter = require('express').Router()
 const Fin = require('../models/fin')
 const AllFin = require('../models/allFin')
 const Eng = require('../models/eng')
+const FinNew = require('../models/finNew')
 const translate = require('@vitalets/google-translate-api')
 
 proverbsRouter.get('/', async (request, response, next) => {
@@ -79,5 +80,23 @@ proverbsRouter.get('/eng', async (request, response, next) => {
     next(error)
   }
 })
+
+proverbsRouter.get('/new', async (request, response, next) => {
+  try {
+    const count = await FinNew.count()
+    const random = Math.floor(Math.random() * count)
+    const proverb = await FinNew.findOne().skip(random)
+
+    const translated = await translate(proverb.content, { to: 'en' })
+
+    response.send(`<!DOCTYPE html><title>Sananlaskuja</title>
+    <h1>${proverb.content}</h1>
+    <h1>${translated.text}</h1>`)
+  }
+  catch(error) {
+    next(error)
+  }
+})
+
 
 module.exports = proverbsRouter
